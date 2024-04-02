@@ -1,12 +1,19 @@
 {
   "name": "test-auto",
-  "module": "index.js",
+  "module": "src/index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "typescript": "^5.4.3"
+  },
+  "scripts": {
+    "test:watch": "jest --watch"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/jest": "^29.5.12"
   }
 }
