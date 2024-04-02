@@ -1,0 +1,12 @@
+{
+  "name": "test-auto",
+  "module": "index.js",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "jest": "^29.7.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
