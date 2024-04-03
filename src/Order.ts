@@ -1,6 +1,17 @@
-import { ArticleInOrder } from "./types/Articles";
+type Article = {
+    id: string;
+    name: string;
+    priceEur: number;
+    weightKg: number;
+    specialShippingCost?: number;
+};
 
-const ARTICLES = [
+export type ArticleInOrder = {
+    article: Article;
+    quantity: number;
+};
+
+const ARTICLES: Article[] = [
     {
         id: "1234",
         name: "Câble HDMI",
@@ -12,25 +23,66 @@ const ARTICLES = [
         name: "Cuisse de poulet",
         priceEur: 10,
         weightKg: 0.15,
+        specialShippingCost: 4,
     },
 ];
+
 export class Order {
     id!: string;
-    articlesInOrder!: ArticleInOrder[];
+    articlesInOrder: ArticleInOrder[] = [];
+
+    submitted: boolean = false;
 
     static createOrder(
         articlesInOrder: { articleId: string; quantity: number }[]
     ): Order {
-        // retourner un objet Order avec les articles et leur quantité
-        // émettre une erreur si l'un des articles n'existe pas dans l'objet ARTICLES
         const order = new Order();
-        order.articlesInOrder = articlesInOrder.map(({ articleId, quantity }) => {
-            const foundArticle = ARTICLES.find(article => article.id === articleId);
-            if (!foundArticle) {
-                throw new Error(`The article with id ${articleId} is not found.`);
+
+        for (const { articleId, quantity } of articlesInOrder) {
+            const article = ARTICLES.find((article) => article.id === articleId);
+            if (!article) {
+                throw new Error(`Article with ID ${articleId} not found.`);
             }
-            return { article: foundArticle, quantity };
-        });
+            order.articlesInOrder.push({ article, quantity });
+        }
+
         return order;
+    }
+
+    submitOrder() {
+        this.submitted = true;
+    }
+
+    private getTotalPrice(): number {
+        return this.articlesInOrder.reduce(
+            (total, { article, quantity }) => total + article.priceEur * quantity,
+            0
+        );
+    }
+
+    getShippingCost(): number {
+        return this.getTotalPrice() >= 100
+            ? 0
+            : this.articlesInOrder.reduce(
+                (total, { article, quantity }) =>
+                    total +
+                    (article.specialShippingCost || article.weightKg * 10) * quantity,
+                0
+            );
+    }
+
+    getOrderCost(): {
+        totalWithoutShipping: number;
+        shipping: number;
+        totalWithShipping: number;
+    } {
+        const totalWithoutShipping = this.getTotalPrice();
+        const shipping = this.getShippingCost();
+
+        return {
+            totalWithoutShipping,
+            shipping,
+            totalWithShipping: totalWithoutShipping + shipping,
+        };
     }
 }
