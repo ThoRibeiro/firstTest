@@ -1,40 +1,83 @@
 type Article = {
     id: string;
+    name: string;
     priceEur: number;
     weightKg: number;
-    quantity: number;
     specialShippingCost?: number;
 };
 
-function getShippingCost(articles: Article[]) {
-    const totalPrice = articles.reduce(
-        (total, article) => total + article.priceEur * article.quantity,
+type ArticleInOrder = {
+    article: Article;
+    quantity: number;
+};
+
+const ARTICLES = [
+    {
+        id: "1234",
+        name: "Câble HDMI",
+        priceEur: 20,
+        weightKg: 0.1,
+    },
+    {
+        id: "5678",
+        name: "Cuisse de poulet",
+        priceEur: 10,
+        weightKg: 0.15,
+    },
+];
+
+class Order {
+    id!: string;
+    articlesInOrder!: ArticleInOrder[];
+
+    static createOrder(
+        articlesInOrder: { articleId: string; quantity: number }[]
+    ): Order {
+        // retourner un objet Order avec les articles et leur quantité
+        // émettre une erreur si l'un des articles n'existe pas dans l'objet ARTICLES
+        const order = new Order();
+        order.articlesInOrder = articlesInOrder.map(({ articleId, quantity }) => {
+            const foundArticle = ARTICLES.find(article => article.id === articleId);
+            if (!foundArticle) {
+                throw new Error(`L'article avec l'identifiant ${articleId} n'existe pas.`);
+            }
+            return { article: foundArticle, quantity };
+        });
+        return order;
+    }
+}
+
+function getTotalPrice(articlesInOrder: ArticleInOrder[]): number {
+    return articlesInOrder.reduce(
+        (total, { article, quantity }) => total + article.priceEur * quantity,
         0
     );
-    return totalPrice >= 100
+}
+
+function getShippingCost(articlesInOrder: ArticleInOrder[]): number {
+    return getTotalPrice(articlesInOrder) >= 100
         ? 0
-        : articles.reduce(
-            (total, article) =>
+        : articlesInOrder.reduce(
+            (total, { article, quantity }) =>
                 total +
-                (article.specialShippingCost || article.weightKg * 10) *
-                article.quantity,
+                (article.specialShippingCost || article.weightKg * 10) * quantity,
             0
         );
 }
 
-// retourne le total de la commande
-function getOrderCost(articles: Article[]): { withoutShipping: number, shipping: number, withShipping: number } {
-    const totalWithoutShipping = articles.reduce(
-        (total, article) => total + article.priceEur * article.quantity,
-        0
-    );
-    const shippingCost = getShippingCost(articles);
-    const totalWithShipping = totalWithoutShipping + shippingCost;
+function getOrderCost(articlesInOrder: ArticleInOrder[]): {
+    totalWithoutShipping: number;
+    shipping: number;
+    totalWithShipping: number;
+} {
+    const totalWithoutShipping = getTotalPrice(articlesInOrder);
+    const shipping = getShippingCost(articlesInOrder);
 
     return {
-        withoutShipping: totalWithoutShipping,
-        shipping: shippingCost,
-        withShipping: totalWithShipping
+        totalWithoutShipping,
+        shipping,
+        totalWithShipping: totalWithoutShipping + shipping,
     };
 }
-export { getShippingCost, getOrderCost};
+
+export { getShippingCost, getOrderCost };
