@@ -1,4 +1,5 @@
 import { Order } from "../Order";
+const sendMailMock = jest.fn();
 
 describe("static createOrder", () => {
     describe("when all article IDs belong to articles in table", () => {
@@ -48,6 +49,7 @@ describe("submitOrder", () => {
     it("sets `submitted` to true", () => {
         const order = new Order();
         order.submitOrder();
+        expect(order.submitted).toEqual(true);
         expect(order.submitted).toEqual(true);
     });
 });
@@ -102,5 +104,15 @@ describe("getOrderCost", () => {
             shipping: 14,
             totalWithShipping: 84,
         });
+    });
+});
+
+describe("sendEmail", () => {
+    it("not display in console.log", () => {
+        const originalLog = console.log;
+        console.log = jest.fn();
+        sendMailMock();
+        expect(console.log).not.toHaveBeenCalled();
+        console.log = originalLog;
     });
 });

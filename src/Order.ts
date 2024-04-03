@@ -1,15 +1,6 @@
-type Article = {
-    id: string;
-    name: string;
-    priceEur: number;
-    weightKg: number;
-    specialShippingCost?: number;
-};
+import {Article, ArticleInOrder} from "./types/Articles";
 
-export type ArticleInOrder = {
-    article: Article;
-    quantity: number;
-};
+import { sendMail } from "./lib/email";
 
 const ARTICLES: Article[] = [
     {
@@ -30,6 +21,8 @@ const ARTICLES: Article[] = [
 export class Order {
     id!: string;
     articlesInOrder: ArticleInOrder[] = [];
+
+
 
     submitted: boolean = false;
 
