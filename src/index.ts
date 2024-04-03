@@ -1,15 +1,4 @@
-type Article = {
-    id: string;
-    name: string;
-    priceEur: number;
-    weightKg: number;
-    specialShippingCost?: number;
-};
-
-type ArticleInOrder = {
-    article: Article;
-    quantity: number;
-};
+import { ArticleInOrder } from "./types/Articles";
 
 const ARTICLES = [
     {

@@ -1,4 +1,4 @@
-import { getOrderCost, getShippingCost } from "./index";
+import { getOrderCost, getShippingCost } from "../index";
 
 describe("getShippingCost", () => {
     describe("if total article price greater than or equal to 100", () => {
